@@ -1,0 +1,21 @@
+{
+  "name": "serverless-crud-api",
+  "version": "1.0.0",
+  "description": "Serverless CRUD API with DynamoDB",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "deploy:dev": "serverless deploy --stage dev",
+    "deploy:prod": "serverless deploy --stage prod"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1000.0",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "jest": "^27.0.6",
+    "serverless": "^3.0.0"
+  }
+}
