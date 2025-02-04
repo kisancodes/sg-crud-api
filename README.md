@@ -21,16 +21,19 @@ This project demonstrates a serverless REST API built with AWS Lambda, API Gatew
 ## Setup and Deployment
 
 1. Install dependencies:
+
 ```bash
 npm install
 ```
 
 2. Deploy to dev environment:
+
 ```bash
 npm run deploy:dev
 ```
 
 3. Deploy to production:
+
 ```bash
 npm run deploy:prod
 ```
@@ -70,10 +73,7 @@ The project uses GitHub Actions for continuous deployment. The pipeline is trigg
 ## Testing
 
 Run the test suite:
+
 ```bash
 npm test
 ```
-
-## Demo
-
-A video demonstration of the application can be found here: [Demo Video Link]

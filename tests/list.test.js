@@ -16,7 +16,7 @@ describe('List Items Lambda', () => {
 
   beforeEach(() => {
     documentClient = new AWS.DynamoDB.DocumentClient();
-    process.env.DYNAMODB_TABLE = 'test-table';
+    // Environment variables are set in jest.setup.js
   });
 
   afterEach(() => {

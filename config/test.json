@@ -1,0 +1,3 @@
+{
+  "DYNAMODB_TABLE": "dummy-table-for-tests"
+}
