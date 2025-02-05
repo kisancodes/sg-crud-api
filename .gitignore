@@ -1,1 +1,26 @@
+# Environment variables
+.env
+
+# Dependencies
 node_modules/
+package-lock.json
+
+# Testing
+coverage/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Serverless
+.serverless/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -11,7 +11,8 @@
     "deploy:prod": "serverless deploy --stage prod"
   },
   "dependencies": {
-    "aws-sdk": "^2.1000.0",
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/lib-dynamodb": "^3.0.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

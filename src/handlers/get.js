@@ -1,7 +1,7 @@
 'use strict';
 
-const AWS = require('aws-sdk');
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const { GetCommand } = require('@aws-sdk/lib-dynamodb');
+const dynamoDB = require('../utils/dynamodb');
 
 module.exports.handler = async (event) => {
   try {
@@ -12,7 +12,7 @@ module.exports.handler = async (event) => {
       }
     };
 
-    const result = await dynamoDb.get(params).promise();
+    const result = await dynamoDB.send(new GetCommand(params));
 
     if (!result.Item) {
       return {

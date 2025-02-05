@@ -1,7 +1,7 @@
 'use strict';
 
-const AWS = require('aws-sdk');
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const { ScanCommand } = require('@aws-sdk/lib-dynamodb');
+const dynamoDB = require('../utils/dynamodb');
 
 module.exports.handler = async (event) => {
   try {
@@ -9,7 +9,7 @@ module.exports.handler = async (event) => {
       TableName: process.env.DYNAMODB_TABLE
     };
 
-    const result = await dynamoDb.scan(params).promise();
+    const result = await dynamoDB.send(new ScanCommand(params));
 
     return {
       statusCode: 200,

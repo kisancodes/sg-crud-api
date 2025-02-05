@@ -1,9 +1,8 @@
 'use strict';
 
-const AWS = require('aws-sdk');
+const { PutCommand } = require('@aws-sdk/lib-dynamodb');
 const uuid = require('uuid');
-
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const dynamoDB = require('../utils/dynamodb');
 
 module.exports.handler = async (event) => {
   try {
@@ -29,7 +28,7 @@ module.exports.handler = async (event) => {
       }
     };
 
-    await dynamoDb.put(params).promise();
+    await dynamoDB.send(new PutCommand(params));
 
     return {
       statusCode: 201,

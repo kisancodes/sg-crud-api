@@ -1,7 +1,7 @@
 'use strict';
 
-const AWS = require('aws-sdk');
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const { UpdateCommand } = require('@aws-sdk/lib-dynamodb');
+const dynamoDB = require('../utils/dynamodb');
 
 module.exports.handler = async (event) => {
   try {
@@ -33,7 +33,7 @@ module.exports.handler = async (event) => {
       ReturnValues: 'ALL_NEW'
     };
 
-    const result = await dynamoDb.update(params).promise();
+    const result = await dynamoDB.send(new UpdateCommand(params));
 
     return {
       statusCode: 200,

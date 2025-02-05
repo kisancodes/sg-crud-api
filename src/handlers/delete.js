@@ -1,7 +1,7 @@
 'use strict';
 
-const AWS = require('aws-sdk');
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const { DeleteCommand } = require('@aws-sdk/lib-dynamodb');
+const dynamoDB = require('../utils/dynamodb');
 
 module.exports.handler = async (event) => {
   try {
@@ -12,7 +12,7 @@ module.exports.handler = async (event) => {
       }
     };
 
-    await dynamoDb.delete(params).promise();
+    await dynamoDB.send(new DeleteCommand(params));
 
     return {
       statusCode: 204,
