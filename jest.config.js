@@ -1,5 +1,7 @@
 module.exports = {
   setupFiles: ['./jest.setup.js'],
+  clearMocks: true,
+  resetModules: false,
   testEnvironment: 'node',
   testMatch: ['**/tests/**/*.test.js'],
   collectCoverage: true,

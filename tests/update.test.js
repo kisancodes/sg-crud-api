@@ -1,26 +1,13 @@
 const { handler } = require('../src/handlers/update');
-const AWS = require('aws-sdk');
+const { UpdateCommand } = require('@aws-sdk/lib-dynamodb');
+const { mockClient } = require('aws-sdk-client-mock');
+const { DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
 
-jest.mock('aws-sdk', () => {
-  const mDocumentClient = {
-    update: jest.fn().mockReturnThis(),
-    promise: jest.fn()
-  };
-  return {
-    DynamoDB: { DocumentClient: jest.fn(() => mDocumentClient) }
-  };
-});
+const ddbMock = mockClient(DynamoDBDocumentClient);
 
 describe('Update Item Lambda', () => {
-  let documentClient;
-
   beforeEach(() => {
-    documentClient = new AWS.DynamoDB.DocumentClient();
-    // Environment variables are set in jest.setup.js
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
+    ddbMock.reset();
   });
 
   test('should update item successfully', async () => {
@@ -30,7 +17,7 @@ describe('Update Item Lambda', () => {
       description: 'Updated Description'
     };
 
-    documentClient.promise.mockResolvedValueOnce({ Attributes: updatedItem });
+    ddbMock.on(UpdateCommand).resolves({ Attributes: updatedItem });
 
     const response = await handler({
       pathParameters: { id: '123' },
@@ -41,7 +28,7 @@ describe('Update Item Lambda', () => {
     });
 
     expect(response.statusCode).toBe(200);
-    expect(documentClient.update).toHaveBeenCalled();
+    expect(ddbMock.calls()).toHaveLength(1);
     
     const item = JSON.parse(response.body);
     expect(item).toEqual(updatedItem);

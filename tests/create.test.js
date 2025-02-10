@@ -1,27 +1,9 @@
-const { handler } = require('../src/handlers/create');
-const AWS = require('aws-sdk');
+jest.mock('../src/utils/dynamodb');
 
-jest.mock('aws-sdk', () => {
-  const mDocumentClient = {
-    put: jest.fn().mockReturnThis(),
-    promise: jest.fn()
-  };
-  return {
-    DynamoDB: { DocumentClient: jest.fn(() => mDocumentClient) }
-  };
-});
+const { send } = require('../src/utils/dynamodb');
+const { handler } = require('../src/handlers/create');
 
 describe('Create Item Lambda', () => {
-  let documentClient;
-
-  beforeEach(() => {
-    documentClient = new AWS.DynamoDB.DocumentClient();
-    // Environment variables are set in jest.setup.js
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
 
   test('should create an item successfully', async () => {
     const item = {
@@ -29,14 +11,14 @@ describe('Create Item Lambda', () => {
       description: 'Test Description'
     };
 
-    documentClient.promise.mockResolvedValueOnce({});
+    send.mockResolvedValueOnce({});
 
     const response = await handler({
       body: JSON.stringify(item)
     });
 
     expect(response.statusCode).toBe(201);
-    expect(documentClient.put).toHaveBeenCalled();
+    expect(send).toHaveBeenCalledTimes(1);
     
     const parsedBody = JSON.parse(response.body);
     expect(parsedBody.name).toBe(item.name);
@@ -54,7 +36,7 @@ describe('Create Item Lambda', () => {
     });
 
     expect(response.statusCode).toBe(400);
-    expect(documentClient.put).not.toHaveBeenCalled();
+    expect(send).not.toHaveBeenCalled();
   });
 
   test('should return 500 on database error', async () => {
@@ -63,13 +45,13 @@ describe('Create Item Lambda', () => {
       description: 'Test Description'
     };
 
-    documentClient.promise.mockRejectedValueOnce(new Error('Database error'));
+    send.mockRejectedValueOnce(new Error('Database error'));
 
     const response = await handler({
       body: JSON.stringify(item)
     });
 
     expect(response.statusCode).toBe(500);
-    expect(response.body).toContain('Could not create the item');
+    expect(JSON.parse(response.body).message).toBe('Could not create the item');
   });
 });

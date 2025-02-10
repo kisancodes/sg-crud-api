@@ -1,26 +1,13 @@
 const { handler } = require('../src/handlers/list');
-const AWS = require('aws-sdk');
+const { ScanCommand } = require('@aws-sdk/lib-dynamodb');
+const { mockClient } = require('aws-sdk-client-mock');
+const { DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
 
-jest.mock('aws-sdk', () => {
-  const mDocumentClient = {
-    scan: jest.fn().mockReturnThis(),
-    promise: jest.fn()
-  };
-  return {
-    DynamoDB: { DocumentClient: jest.fn(() => mDocumentClient) }
-  };
-});
+const ddbMock = mockClient(DynamoDBDocumentClient);
 
 describe('List Items Lambda', () => {
-  let documentClient;
-
   beforeEach(() => {
-    documentClient = new AWS.DynamoDB.DocumentClient();
-    // Environment variables are set in jest.setup.js
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
+    ddbMock.reset();
   });
 
   test('should list items successfully', async () => {
@@ -29,19 +16,19 @@ describe('List Items Lambda', () => {
       { id: '2', name: 'Item 2' }
     ];
 
-    documentClient.promise.mockResolvedValueOnce({ Items: mockItems });
+    ddbMock.on(ScanCommand).resolves({ Items: mockItems });
 
     const response = await handler({});
 
     expect(response.statusCode).toBe(200);
-    expect(documentClient.scan).toHaveBeenCalled();
+    expect(ddbMock.calls()).toHaveLength(1);
     
     const items = JSON.parse(response.body);
     expect(items).toEqual(mockItems);
   });
 
   test('should return 500 on database error', async () => {
-    documentClient.promise.mockRejectedValueOnce(new Error('Database error'));
+    ddbMock.on(ScanCommand).rejects(new Error('Database error'));
 
     const response = await handler({});
 

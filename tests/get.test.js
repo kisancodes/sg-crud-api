@@ -1,27 +1,9 @@
-const { handler } = require('../src/handlers/get');
-const AWS = require('aws-sdk');
+jest.mock('../src/utils/dynamodb');
 
-jest.mock('aws-sdk', () => {
-  const mDocumentClient = {
-    get: jest.fn().mockReturnThis(),
-    promise: jest.fn()
-  };
-  return {
-    DynamoDB: { DocumentClient: jest.fn(() => mDocumentClient) }
-  };
-});
+const { send } = require('../src/utils/dynamodb');
+const { handler } = require('../src/handlers/get');
 
 describe('Get Item Lambda', () => {
-  let documentClient;
-
-  beforeEach(() => {
-    documentClient = new AWS.DynamoDB.DocumentClient();
-    // Environment variables are set in jest.setup.js
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
 
   test('should get item successfully', async () => {
     const mockItem = {
@@ -29,21 +11,21 @@ describe('Get Item Lambda', () => {
       name: 'Test Item'
     };
 
-    documentClient.promise.mockResolvedValueOnce({ Item: mockItem });
+    dynamodb.send.mockResolvedValueOnce({ Item: mockItem });
 
     const response = await handler({
       pathParameters: { id: '123' }
     });
 
     expect(response.statusCode).toBe(200);
-    expect(documentClient.get).toHaveBeenCalled();
+    expect(send).toHaveBeenCalledTimes(1);
     
     const item = JSON.parse(response.body);
     expect(item).toEqual(mockItem);
   });
 
   test('should return 404 when item not found', async () => {
-    documentClient.promise.mockResolvedValueOnce({ Item: null });
+    dynamodb.send.mockResolvedValueOnce({ Item: null });
 
     const response = await handler({
       pathParameters: { id: '123' }
@@ -53,13 +35,13 @@ describe('Get Item Lambda', () => {
   });
 
   test('should return 500 on database error', async () => {
-    documentClient.promise.mockRejectedValueOnce(new Error('Database error'));
+    send.mockRejectedValueOnce(new Error('Database error'));
 
     const response = await handler({
       pathParameters: { id: '123' }
     });
 
     expect(response.statusCode).toBe(500);
-    expect(response.body).toContain('Could not fetch the item');
+    expect(JSON.parse(response.body).message).toBe('Could not fetch the item');
   });
 });

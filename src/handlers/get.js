@@ -1,7 +1,7 @@
 'use strict';
 
 const { GetCommand } = require('@aws-sdk/lib-dynamodb');
-const dynamoDB = require('../utils/dynamodb');
+const { send } = require('../utils/dynamodb');
 
 module.exports.handler = async (event) => {
   try {
@@ -12,7 +12,7 @@ module.exports.handler = async (event) => {
       }
     };
 
-    const result = await dynamoDB.send(new GetCommand(params));
+    const result = await send(new GetCommand(params));
 
     if (!result.Item) {
       return {
