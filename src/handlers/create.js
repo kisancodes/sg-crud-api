@@ -2,7 +2,7 @@
 
 const { PutCommand } = require('@aws-sdk/lib-dynamodb');
 const uuid = require('uuid');
-const { send } = require('../utils/dynamodb');
+const dynamoDB = require('../utils/dynamodb');
 
 module.exports.handler = async (event) => {
   try {
@@ -28,7 +28,7 @@ module.exports.handler = async (event) => {
       }
     };
 
-    await send(new PutCommand(params));
+    await dynamoDB.send(new PutCommand(params));
 
     return {
       statusCode: 201,

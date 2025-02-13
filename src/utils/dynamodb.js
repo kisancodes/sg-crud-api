@@ -9,6 +9,4 @@ const client = new DynamoDBClient({
 
 const dynamoDB = DynamoDBDocumentClient.from(client);
 
-module.exports = {
-  send: (cmd) => dynamoDB.send(cmd)
-};
+module.exports = dynamoDB;

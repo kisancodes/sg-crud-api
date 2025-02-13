@@ -1,9 +1,14 @@
-jest.mock('../src/utils/dynamodb');
-
-const { send } = require('../src/utils/dynamodb');
 const { handler } = require('../src/handlers/create');
+const { PutCommand } = require('@aws-sdk/lib-dynamodb');
+const { mockClient } = require('aws-sdk-client-mock');
+const { DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
+
+const ddbMock = mockClient(DynamoDBDocumentClient);
 
 describe('Create Item Lambda', () => {
+  beforeEach(() => {
+    ddbMock.reset();
+  });
 
   test('should create an item successfully', async () => {
     const item = {
@@ -11,19 +16,21 @@ describe('Create Item Lambda', () => {
       description: 'Test Description'
     };
 
-    send.mockResolvedValueOnce({});
+    ddbMock.on(PutCommand).resolves({});
 
     const response = await handler({
       body: JSON.stringify(item)
     });
 
     expect(response.statusCode).toBe(201);
-    expect(send).toHaveBeenCalledTimes(1);
+    expect(ddbMock.calls()).toHaveLength(1);
     
     const parsedBody = JSON.parse(response.body);
     expect(parsedBody.name).toBe(item.name);
     expect(parsedBody.description).toBe(item.description);
     expect(parsedBody.id).toBeDefined();
+    expect(parsedBody.createdAt).toEqual(expect.any(Number));
+    expect(parsedBody.updatedAt).toEqual(expect.any(Number));
   });
 
   test('should return 400 when name is missing', async () => {
@@ -36,7 +43,7 @@ describe('Create Item Lambda', () => {
     });
 
     expect(response.statusCode).toBe(400);
-    expect(send).not.toHaveBeenCalled();
+    expect(ddbMock.calls()).toHaveLength(0);
   });
 
   test('should return 500 on database error', async () => {
@@ -45,7 +52,7 @@ describe('Create Item Lambda', () => {
       description: 'Test Description'
     };
 
-    send.mockRejectedValueOnce(new Error('Database error'));
+    ddbMock.on(PutCommand).rejects(new Error('Database error'));
 
     const response = await handler({
       body: JSON.stringify(item)

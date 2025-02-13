@@ -12,8 +12,20 @@ describe('List Items Lambda', () => {
 
   test('should list items successfully', async () => {
     const mockItems = [
-      { id: '1', name: 'Item 1' },
-      { id: '2', name: 'Item 2' }
+      { 
+        id: '1', 
+        name: 'Item 1',
+        description: 'Description 1',
+        createdAt: 1234567890,
+        updatedAt: 1234567890
+      },
+      { 
+        id: '2', 
+        name: 'Item 2',
+        description: 'Description 2',
+        createdAt: 1234567891,
+        updatedAt: 1234567891
+      }
     ];
 
     ddbMock.on(ScanCommand).resolves({ Items: mockItems });

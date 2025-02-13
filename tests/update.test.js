@@ -14,7 +14,8 @@ describe('Update Item Lambda', () => {
     const updatedItem = {
       id: '123',
       name: 'Updated Item',
-      description: 'Updated Description'
+      description: 'Updated Description',
+      updatedAt: expect.any(Number)
     };
 
     ddbMock.on(UpdateCommand).resolves({ Attributes: updatedItem });
@@ -31,7 +32,10 @@ describe('Update Item Lambda', () => {
     expect(ddbMock.calls()).toHaveLength(1);
     
     const item = JSON.parse(response.body);
-    expect(item).toEqual(updatedItem);
+    expect(item.id).toBe(updatedItem.id);
+    expect(item.name).toBe(updatedItem.name);
+    expect(item.description).toBe(updatedItem.description);
+    expect(item.updatedAt).toEqual(expect.any(Number));
   });
 
   test('should return 400 when name is missing', async () => {
@@ -43,11 +47,11 @@ describe('Update Item Lambda', () => {
     });
 
     expect(response.statusCode).toBe(400);
-    expect(documentClient.update).not.toHaveBeenCalled();
+    expect(ddbMock.calls()).toHaveLength(0);
   });
 
   test('should return 500 on database error', async () => {
-    documentClient.promise.mockRejectedValueOnce(new Error('Database error'));
+    ddbMock.on(UpdateCommand).rejects(new Error('Database error'));
 
     const response = await handler({
       pathParameters: { id: '123' },
