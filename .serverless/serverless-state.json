@@ -35,6 +35,75 @@
         "AWSTemplateFormatVersion": "2010-09-09",
         "Description": "The AWS CloudFormation template for this Serverless application",
         "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            }
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
           "CreateLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
@@ -150,8 +219,10 @@
             "Type": "AWS::Lambda::Function",
             "Properties": {
               "Code": {
-                "S3Bucket": "serverless-framework-deployments-us-east-1-2fcf66f5-8e4e",
-                "S3Key": "serverless/serverless-crud-api/dev/1738670468366-2025-02-04T12:01:08.366Z/serverless-crud-api.zip"
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/serverless-crud-api/dev/1739436972897-2025-02-13T08:56:12.897Z/serverless-crud-api.zip"
               },
               "Handler": "src/handlers/create.handler",
               "Runtime": "nodejs20.x",
@@ -178,8 +249,10 @@
             "Type": "AWS::Lambda::Function",
             "Properties": {
               "Code": {
-                "S3Bucket": "serverless-framework-deployments-us-east-1-2fcf66f5-8e4e",
-                "S3Key": "serverless/serverless-crud-api/dev/1738670468366-2025-02-04T12:01:08.366Z/serverless-crud-api.zip"
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/serverless-crud-api/dev/1739436972897-2025-02-13T08:56:12.897Z/serverless-crud-api.zip"
               },
               "Handler": "src/handlers/list.handler",
               "Runtime": "nodejs20.x",
@@ -206,8 +279,10 @@
             "Type": "AWS::Lambda::Function",
             "Properties": {
               "Code": {
-                "S3Bucket": "serverless-framework-deployments-us-east-1-2fcf66f5-8e4e",
-                "S3Key": "serverless/serverless-crud-api/dev/1738670468366-2025-02-04T12:01:08.366Z/serverless-crud-api.zip"
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/serverless-crud-api/dev/1739436972897-2025-02-13T08:56:12.897Z/serverless-crud-api.zip"
               },
               "Handler": "src/handlers/get.handler",
               "Runtime": "nodejs20.x",
@@ -234,8 +309,10 @@
             "Type": "AWS::Lambda::Function",
             "Properties": {
               "Code": {
-                "S3Bucket": "serverless-framework-deployments-us-east-1-2fcf66f5-8e4e",
-                "S3Key": "serverless/serverless-crud-api/dev/1738670468366-2025-02-04T12:01:08.366Z/serverless-crud-api.zip"
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/serverless-crud-api/dev/1739436972897-2025-02-13T08:56:12.897Z/serverless-crud-api.zip"
               },
               "Handler": "src/handlers/update.handler",
               "Runtime": "nodejs20.x",
@@ -262,8 +339,10 @@
             "Type": "AWS::Lambda::Function",
             "Properties": {
               "Code": {
-                "S3Bucket": "serverless-framework-deployments-us-east-1-2fcf66f5-8e4e",
-                "S3Key": "serverless/serverless-crud-api/dev/1738670468366-2025-02-04T12:01:08.366Z/serverless-crud-api.zip"
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/serverless-crud-api/dev/1739436972897-2025-02-13T08:56:12.897Z/serverless-crud-api.zip"
               },
               "Handler": "src/handlers/delete.handler",
               "Runtime": "nodejs20.x",
@@ -286,54 +365,54 @@
               "DeleteLogGroup"
             ]
           },
-          "CreateLambdaVersionFVGPMHTXMJYRnNAxUvZUkrTxilWVZpC57sEHfIMLZU": {
+          "CreateLambdaVersionhMOyXZtoxUph4uUzNG1MjCZRBoYrTduXVcbXquSGrkU": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "CreateLambdaFunction"
               },
-              "CodeSha256": "dNFds78ulXsEn/oIlDo+6Bq9FuLC8tgcHZKGIPDZxb0="
+              "CodeSha256": "VZ/2GQIGTFHmSxeH+XotWHlS+Evs1CNoGiweNMRyNis="
             }
           },
-          "ListLambdaVersiontParHCnBL9OwPPM20VEepwsYAFxtG7VCy4OBS2HpI": {
+          "ListLambdaVersionR40NTxZYxD5iv6o8QuGxQQS4JciBRKlYX5uY7FCVg": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ListLambdaFunction"
               },
-              "CodeSha256": "dNFds78ulXsEn/oIlDo+6Bq9FuLC8tgcHZKGIPDZxb0="
+              "CodeSha256": "VZ/2GQIGTFHmSxeH+XotWHlS+Evs1CNoGiweNMRyNis="
             }
           },
-          "GetLambdaVersionYybeZH2YfucZFwFUwyPCw3D6G6gn5l7WoorVsJkI": {
+          "GetLambdaVersionTnJuR2sIOqSKYHysCoY38xv38yjq2DAksmmhB9pb4s": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GetLambdaFunction"
               },
-              "CodeSha256": "dNFds78ulXsEn/oIlDo+6Bq9FuLC8tgcHZKGIPDZxb0="
+              "CodeSha256": "VZ/2GQIGTFHmSxeH+XotWHlS+Evs1CNoGiweNMRyNis="
             }
           },
-          "UpdateLambdaVersionWuA3kLDQgofM56e95rsuWbrvDapxcIY0IxSNZstUEQ": {
+          "UpdateLambdaVersion2Fra5U3d4C0x9KQjWYmb2QfsAPd6ookxhJP7hcIVA": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "UpdateLambdaFunction"
               },
-              "CodeSha256": "dNFds78ulXsEn/oIlDo+6Bq9FuLC8tgcHZKGIPDZxb0="
+              "CodeSha256": "VZ/2GQIGTFHmSxeH+XotWHlS+Evs1CNoGiweNMRyNis="
             }
           },
-          "DeleteLambdaVersion6bXbRNRL72YrM4mMXi1iQSSCszqyMbWkWtTwZ3FY": {
+          "DeleteLambdaVersionrJOAnDWvzZSSIPD5G7IkOa1C3bTeQNOo970dsq2GMc": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "DeleteLambdaFunction"
               },
-              "CodeSha256": "dNFds78ulXsEn/oIlDo+6Bq9FuLC8tgcHZKGIPDZxb0="
+              "CodeSha256": "VZ/2GQIGTFHmSxeH+XotWHlS+Evs1CNoGiweNMRyNis="
             }
           },
           "ApiGatewayRestApi": {
@@ -695,7 +774,7 @@
               "DeleteLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1738670453287": {
+          "ApiGatewayDeployment1739436957121": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -920,7 +999,9 @@
         },
         "Outputs": {
           "ServerlessDeploymentBucketName": {
-            "Value": "serverless-framework-deployments-us-east-1-2fcf66f5-8e4e",
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            },
             "Export": {
               "Name": "sls-serverless-crud-api-dev-ServerlessDeploymentBucketName"
             }
@@ -928,7 +1009,7 @@
           "CreateLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "CreateLambdaVersionFVGPMHTXMJYRnNAxUvZUkrTxilWVZpC57sEHfIMLZU"
+              "Ref": "CreateLambdaVersionhMOyXZtoxUph4uUzNG1MjCZRBoYrTduXVcbXquSGrkU"
             },
             "Export": {
               "Name": "sls-serverless-crud-api-dev-CreateLambdaFunctionQualifiedArn"
@@ -937,7 +1018,7 @@
           "ListLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ListLambdaVersiontParHCnBL9OwPPM20VEepwsYAFxtG7VCy4OBS2HpI"
+              "Ref": "ListLambdaVersionR40NTxZYxD5iv6o8QuGxQQS4JciBRKlYX5uY7FCVg"
             },
             "Export": {
               "Name": "sls-serverless-crud-api-dev-ListLambdaFunctionQualifiedArn"
@@ -946,7 +1027,7 @@
           "GetLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GetLambdaVersionYybeZH2YfucZFwFUwyPCw3D6G6gn5l7WoorVsJkI"
+              "Ref": "GetLambdaVersionTnJuR2sIOqSKYHysCoY38xv38yjq2DAksmmhB9pb4s"
             },
             "Export": {
               "Name": "sls-serverless-crud-api-dev-GetLambdaFunctionQualifiedArn"
@@ -955,7 +1036,7 @@
           "UpdateLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "UpdateLambdaVersionWuA3kLDQgofM56e95rsuWbrvDapxcIY0IxSNZstUEQ"
+              "Ref": "UpdateLambdaVersion2Fra5U3d4C0x9KQjWYmb2QfsAPd6ookxhJP7hcIVA"
             },
             "Export": {
               "Name": "sls-serverless-crud-api-dev-UpdateLambdaFunctionQualifiedArn"
@@ -964,7 +1045,7 @@
           "DeleteLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "DeleteLambdaVersion6bXbRNRL72YrM4mMXi1iQSSCszqyMbWkWtTwZ3FY"
+              "Ref": "DeleteLambdaVersionrJOAnDWvzZSSIPD5G7IkOa1C3bTeQNOo970dsq2GMc"
             },
             "Export": {
               "Name": "sls-serverless-crud-api-dev-DeleteLambdaFunctionQualifiedArn"
@@ -994,6 +1075,88 @@
             },
             "Export": {
               "Name": "sls-serverless-crud-api-dev-ServiceEndpoint"
+            }
+          }
+        }
+      },
+      "coreCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            }
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
             }
           }
         }
@@ -1036,7 +1199,7 @@
         "timeout": 6,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "CreateLambdaVersionFVGPMHTXMJYRnNAxUvZUkrTxilWVZpC57sEHfIMLZU"
+        "versionLogicalId": "CreateLambdaVersionhMOyXZtoxUph4uUzNG1MjCZRBoYrTduXVcbXquSGrkU"
       },
       "list": {
         "handler": "src/handlers/list.handler",
@@ -1072,7 +1235,7 @@
         "timeout": 6,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "ListLambdaVersiontParHCnBL9OwPPM20VEepwsYAFxtG7VCy4OBS2HpI"
+        "versionLogicalId": "ListLambdaVersionR40NTxZYxD5iv6o8QuGxQQS4JciBRKlYX5uY7FCVg"
       },
       "get": {
         "handler": "src/handlers/get.handler",
@@ -1108,7 +1271,7 @@
         "timeout": 6,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "GetLambdaVersionYybeZH2YfucZFwFUwyPCw3D6G6gn5l7WoorVsJkI"
+        "versionLogicalId": "GetLambdaVersionTnJuR2sIOqSKYHysCoY38xv38yjq2DAksmmhB9pb4s"
       },
       "update": {
         "handler": "src/handlers/update.handler",
@@ -1144,7 +1307,7 @@
         "timeout": 6,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "UpdateLambdaVersionWuA3kLDQgofM56e95rsuWbrvDapxcIY0IxSNZstUEQ"
+        "versionLogicalId": "UpdateLambdaVersion2Fra5U3d4C0x9KQjWYmb2QfsAPd6ookxhJP7hcIVA"
       },
       "delete": {
         "handler": "src/handlers/delete.handler",
@@ -1180,7 +1343,7 @@
         "timeout": 6,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "DeleteLambdaVersion6bXbRNRL72YrM4mMXi1iQSSCszqyMbWkWtTwZ3FY"
+        "versionLogicalId": "DeleteLambdaVersionrJOAnDWvzZSSIPD5G7IkOa1C3bTeQNOo970dsq2GMc"
       }
     },
     "resources": {
@@ -1208,10 +1371,10 @@
       "Outputs": {}
     },
     "configValidationMode": "warn",
-    "serviceFilename": "serverless",
+    "serviceFilename": "serverless.yml",
     "initialServerlessConfig": {
       "service": "serverless-crud-api",
-      "frameworkVersion": "4",
+      "frameworkVersion": "3",
       "provider": {
         "$ref": "$[\"service\"][\"provider\"]"
       },
@@ -1222,13 +1385,12 @@
         "$ref": "$[\"service\"][\"resources\"]"
       }
     },
-    "appId": null,
-    "orgId": null,
     "layers": {},
+    "isDashboardMonitoringPreconfigured": false,
     "artifact": "/Users/kisantamang/Documents/sg-code-challege/.serverless/serverless-crud-api.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/serverless-crud-api/dev/1738670468366-2025-02-04T12:01:08.366Z",
+    "artifactDirectoryName": "serverless/serverless-crud-api/dev/1739436972897-2025-02-13T08:56:12.897Z",
     "artifact": "serverless-crud-api.zip"
   }
 }
